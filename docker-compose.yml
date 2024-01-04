@@ -1,0 +1,43 @@
+version: '3.4'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  yummer-backend:
+    image: docker.io/library/yummer-backend
+    depends_on:
+      - "db"
+    container_name: yummer-backend-services
+    ports:
+      - "8080:80"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=User ID=postgres; Password=yummerpassword; Server=db;Port=5432; Database=yummer-db; Pooling=true;
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - dev
+  
+  db:
+    image: postgres:latest
+    container_name: yummer-database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yummerpassword
+      - POSTGRES_DB=yummer-db
+    ports:
+      - "5433:5432"
+    restart: always
+    volumes:
+      - app_data:/var/lib/postgresql/data
+    networks:
+      - dev
+    
+volumes:
+  app_data:
+
+
