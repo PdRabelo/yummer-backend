@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using yummer_backend.Data;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,8 +10,12 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
         options.UseNpgsql(conn));
 
 // Add services to the container.
-
 builder.Services.AddControllers();
+
+builder.Services.AddMyServices();
+
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,7 +29,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

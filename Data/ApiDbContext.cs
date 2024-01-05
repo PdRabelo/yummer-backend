@@ -6,14 +6,12 @@ namespace yummer_backend.Data
 {
     public class ApiDbContext : DbContext
     {
-        private readonly ILogger<ApiDbContext> _logger;
 
         public DbSet<User> Users { get; set; }
 
-        public ApiDbContext(DbContextOptions<ApiDbContext> options, ILogger<ApiDbContext> logger)
+        public ApiDbContext(DbContextOptions<ApiDbContext> options)
             : base(options)
         {
-            _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
