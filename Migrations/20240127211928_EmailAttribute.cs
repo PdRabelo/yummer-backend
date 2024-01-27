@@ -5,7 +5,7 @@
 namespace yummer_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class updateuserentity : Migration
+    public partial class EmailAttribute : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+namespace yummer_backend.Utils.Validation;
+
 public class BirthDateValidationAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
@@ -13,4 +15,5 @@ public class BirthDateValidationAttribute : ValidationAttribute
         }
         return ValidationResult.Success;
     }
+    
 }

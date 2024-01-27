@@ -1,4 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using yummer_backend.Utils.Validation;
+
+namespace yummer_backend.Models.DTOs;
 
 public class UserDto
 {

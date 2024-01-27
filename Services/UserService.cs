@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using yummer_backend.Data;
 using yummer_backend.Models;
+using yummer_backend.Models.DTOs;
 
 public class UserService :IUserService
 {
@@ -54,8 +55,14 @@ public class UserService :IUserService
 
     }
 
-    public async Task<User> CreateUserAsync(UserDto newUserDto)
+    public async Task<User?> CreateUserAsync(UserDto newUserDto)
     {
+        _logger.LogInformation("Checking if user exists...");
+        if (await _context.Users.AnyAsync(u => u.Email == newUserDto.Email))
+        {
+            _logger.LogInformation("User already exists.");
+            return null;
+        }
         try
         {
             _logger.LogInformation("Creating user...");

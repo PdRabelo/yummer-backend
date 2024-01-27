@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using yummer_backend.Data;
 using yummer_backend.Models;
+using yummer_backend.Models.DTOs;
 
-namespace Yummer.Controllers
+namespace yummer_backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -12,15 +11,12 @@ namespace Yummer.Controllers
 
         private readonly IUserService _userService;
         private readonly ILogger<UsersController> _logger;
-        private readonly ApiDbContext _context;
 
         public UsersController(
             ILogger<UsersController> logger,
-            ApiDbContext context,
             IUserService userService)
         {
             _logger = logger;
-            _context = context;
             _userService = userService;
         }
         [HttpGet]
@@ -74,7 +70,7 @@ namespace Yummer.Controllers
                 }
 
                 var createdUser = await _userService.CreateUserAsync(newUser);
-                return StatusCode(202, createdUser);
+                return createdUser == null ? Conflict("Email already exists!") : StatusCode(202, createdUser);
             }
             catch (Exception ex)
             {

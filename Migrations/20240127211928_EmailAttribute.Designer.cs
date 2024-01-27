@@ -12,8 +12,8 @@ using yummer_backend.Data;
 namespace yummer_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    [Migration("20231228225407_update-user-entity")]
-    partial class updateuserentity
+    [Migration("20240127211928_EmailAttribute")]
+    partial class EmailAttribute
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
