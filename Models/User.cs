@@ -1,4 +1,6 @@
-﻿namespace yummer_backend.Models
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace yummer_backend.Models
 {
     public class User
     {

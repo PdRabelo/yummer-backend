@@ -6,31 +6,23 @@ namespace yummer_backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class UsersController : ControllerBase
+    public class UsersController(
+        ILogger<UsersController> logger,
+        IUserService userService)
+        : ControllerBase
     {
-
-        private readonly IUserService _userService;
-        private readonly ILogger<UsersController> _logger;
-
-        public UsersController(
-            ILogger<UsersController> logger,
-            IUserService userService)
-        {
-            _logger = logger;
-            _userService = userService;
-        }
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
             try
             {
-                var allUsers = await _userService.GetAllUsersAsync();
+                var allUsers = await userService.GetAllUsersAsync();
                 return Ok(allUsers);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving user");
-                return StatusCode(500);
+                logger.LogError(ex, "Error retrieving users");
+                return StatusCode(500, "Error retrieving users");
             }
         }
 
@@ -39,7 +31,7 @@ namespace yummer_backend.Controllers
         {
             try
             {
-                var user = await _userService.GetUserAsync(id);
+                var user = await userService.GetUserAsync(id);
 
                 if (user == null)
                 {
@@ -50,7 +42,7 @@ namespace yummer_backend.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error retrieving user with ID {id}");
+                logger.LogError(ex, $"Error retrieving user with ID {id}");
                 return StatusCode(500);
             }
         }
@@ -60,29 +52,63 @@ namespace yummer_backend.Controllers
         {
             try
             {
-                _logger.LogInformation("Checking data integrity...");
+                logger.LogInformation("Checking data integrity...");
 
                 if (!ModelState.IsValid)
                 {
                     var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                    _logger.LogError("Wrong data format!");
+                    logger.LogError("Wrong data format!");
                     return BadRequest(errors);
                 }
 
-                var createdUser = await _userService.CreateUserAsync(newUser);
+                var createdUser = await userService.CreateUserAsync(newUser);
                 return createdUser == null ? Conflict("Email already exists!") : StatusCode(202, createdUser);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating new user!");
-                return StatusCode(500);
+                logger.LogError(ex, "Error creating new user!");
+                return StatusCode(500, "Error creating new user!");
             }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
         {
+            try
+            {
+                if (await userService.DeleteUserAsync(id) != null)
+                {
+                    return NoContent();
+                }
+
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while trying to delete the user!");
+                return StatusCode(500, "An error occurred while trying to delete the user!");
+            }
+
             return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserDto userDto)
+        {
+            try
+            {
+                var user = await userService.UpdateUserAsync(id, userDto);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while trying to update the user!");
+                return StatusCode(500, "An error occurred while trying to update the user!");
+            }
         }
     }
 }

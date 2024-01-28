@@ -1,6 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using yummer_backend.Data;
-using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,34 +4,26 @@ using yummer_backend.Data;
 using yummer_backend.Models;
 using yummer_backend.Models.DTOs;
 
-public class UserService :IUserService
+namespace yummer_backend.Services;
+
+public class UserService(ApiDbContext context, ILogger<UserService> logger, IMapper mapper)
+    : IUserService
 {
-    private readonly ApiDbContext _context;
-    private readonly ILogger<UserService> _logger;
-    private readonly IMapper _mapper;
-
-    public UserService(ApiDbContext context, ILogger<UserService> logger, IMapper mapper)
-    {
-        _logger = logger;
-        _context = context;
-        _mapper = mapper;
-    }
-
     public async Task<List<User>> GetAllUsersAsync()
     {
         try
         {
-            _logger.LogInformation("Retrieving all users...");
+            logger.LogInformation("Retrieving all users...");
 
-            var allUsers = await _context.Users.ToListAsync();
+            var allUsers = await context.Users.ToListAsync();
 
-            _logger.LogInformation($"Total user count: {allUsers.Count}");
+            logger.LogInformation($"Total user count: {allUsers.Count}");
 
             return allUsers;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving information from database");
+            logger.LogError(ex, "Error retrieving information from database");
             throw;
         }
     }
@@ -40,16 +32,16 @@ public class UserService :IUserService
     {
         try
         {
-            _logger.LogInformation("Retrieving user...");
+            logger.LogInformation("Retrieving user...");
 
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == id);
+            var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
 
             return user;
 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving user with ID {id}", id);
+            logger.LogError(ex, "Error retrieving user with ID {id}", id);
             return null;
         }
 
@@ -57,27 +49,77 @@ public class UserService :IUserService
 
     public async Task<User?> CreateUserAsync(UserDto newUserDto)
     {
-        _logger.LogInformation("Checking if user exists...");
-        if (await _context.Users.AnyAsync(u => u.Email == newUserDto.Email))
+        logger.LogInformation("Checking if user exists...");
+        if (await context.Users.AnyAsync(u => u.Email == newUserDto.Email))
         {
-            _logger.LogInformation("User already exists.");
+            logger.LogInformation("User already exists.");
             return null;
         }
         try
         {
-            _logger.LogInformation("Creating user...");
+            logger.LogInformation("Creating user...");
 
-            var newUser = _mapper.Map<User>(newUserDto);
-            await _context.Users.AddAsync(newUser);
-            await _context.SaveChangesAsync();
+            var newUser = mapper.Map<User>(newUserDto);
+            await context.Users.AddAsync(newUser);
+            await context.SaveChangesAsync();
             
-            _logger.LogInformation("User created sucessfully!");
+            logger.LogInformation("User created successfully!");
 
             return newUser;
         }
         catch(Exception ex)
         {
-            _logger.LogInformation(ex, "Error creating user");
+            logger.LogError(ex, "Error creating user");
+            throw;
+        }
+    }
+
+    public async Task<User?> DeleteUserAsync(Guid id)
+    {
+        try
+        {
+            logger.LogInformation("Searching user to delete...");
+            var user = await context.Users.FindAsync(id);
+            if (user == null)
+            {
+                logger.LogInformation("User does not exist!");
+                return null;
+            }
+
+            logger.LogInformation("Deleting user...");
+            await context.Users.Where(u => u.Id == id).ExecuteDeleteAsync();
+            await context.SaveChangesAsync();
+            logger.LogInformation("User delete successfully!");
+            return user;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error creating user!");
+            throw;
+        }
+    }
+
+    public async Task<User?> UpdateUserAsync(Guid id, UserDto userData)
+    {
+        try
+        {
+            logger.LogInformation("Searching user to update...");
+            var user = await context.Users.FindAsync(id);
+            if (user == null)
+            {
+                logger.LogInformation("User does not exist!");
+                return null;
+            }
+            logger.LogInformation($"Found user with id {id}");
+            mapper.Map(userData, user);
+            await context.SaveChangesAsync();
+            logger.LogInformation("User update successfully!");
+            return user;
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error updating user!");
             throw;
         }
     }
