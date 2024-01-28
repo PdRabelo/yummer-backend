@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using yummer_backend.Data;
@@ -11,9 +12,11 @@ using yummer_backend.Data;
 namespace yummer_backend.Migrations
 {
     [DbContext(typeof(ApiDbContext))]
-    partial class ApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240128204920_GuidToString")]
+    partial class GuidToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,6 @@ namespace yummer_backend.Migrations
             modelBuilder.Entity("yummer_backend.Models.User", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
                     b.Property<int>("AccessFailedCount")
@@ -38,9 +40,7 @@ namespace yummer_backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(62)
-                        .HasColumnType("character varying(62)");
+                        .HasColumnType("text");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
@@ -58,9 +58,7 @@ namespace yummer_backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
@@ -75,9 +73,7 @@ namespace yummer_backend.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("UserName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

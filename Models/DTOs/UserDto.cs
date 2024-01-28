@@ -9,7 +9,6 @@ public class UserDto
     public string Name { get; set; } = null!;
 
     [Required (ErrorMessage = "Password is mandatory!")]
-    [RegularExpression("(?=.*[A-Z])(?=.*[!@#$%^&*])")]
 
     public string Password { get; set; } = null!;
     

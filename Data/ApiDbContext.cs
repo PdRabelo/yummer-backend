@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using yummer_backend.Data.Configuration;
 using yummer_backend.Models;
-using yummer_backend.Data.Configurations;
 
 namespace yummer_backend.Data
 {

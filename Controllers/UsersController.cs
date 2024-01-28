@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using yummer_backend.Models;
 using yummer_backend.Models.DTOs;
 
 namespace yummer_backend.Controllers
@@ -27,7 +26,7 @@ namespace yummer_backend.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUser([FromRoute] Guid id)
+        public async Task<IActionResult> GetUser([FromRoute] string id)
         {
             try
             {
@@ -62,7 +61,7 @@ namespace yummer_backend.Controllers
                 }
 
                 var createdUser = await userService.CreateUserAsync(newUser);
-                return createdUser == null ? Conflict("Email already exists!") : StatusCode(202, createdUser);
+                return createdUser == null ? Conflict("Email already exists!") : StatusCode(202);
             }
             catch (Exception ex)
             {
@@ -72,28 +71,26 @@ namespace yummer_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteUser([FromRoute] string id)
         {
             try
             {
-                if (await userService.DeleteUserAsync(id) != null)
+                if (await userService.DeleteUserAsync(id) == null)
                 {
-                    return NoContent();
+                    return NotFound();
                 }
 
-                return NotFound();
+                return NoContent();
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while trying to delete the user!");
                 return StatusCode(500, "An error occurred while trying to delete the user!");
             }
-
-            return Ok();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserDto userDto)
+        public async Task<IActionResult> UpdateUser([FromRoute] string id, [FromBody] UserDto userDto)
         {
             try
             {

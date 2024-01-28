@@ -28,7 +28,7 @@ public class UserService(ApiDbContext context, ILogger<UserService> logger, IMap
         }
     }
 
-    public async Task<User?> GetUserAsync(Guid id)
+    public async Task<User?> GetUserAsync(string id)
     {
         try
         {
@@ -74,7 +74,7 @@ public class UserService(ApiDbContext context, ILogger<UserService> logger, IMap
         }
     }
 
-    public async Task<User?> DeleteUserAsync(Guid id)
+    public async Task<User?> DeleteUserAsync(string id)
     {
         try
         {
@@ -99,7 +99,7 @@ public class UserService(ApiDbContext context, ILogger<UserService> logger, IMap
         }
     }
 
-    public async Task<User?> UpdateUserAsync(Guid id, UserDto userData)
+    public async Task<User?> UpdateUserAsync(string id, UserDto userData)
     {
         try
         {
