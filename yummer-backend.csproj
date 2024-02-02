@@ -29,6 +29,11 @@
   <ItemGroup>
     <Compile Remove="Utils\Validation\EmailValidations.cs" />
     <Compile Remove="AuthServices\**" />
+    <Compile Remove="Controllers\UsersController.cs" />
+    <Compile Remove="Interfaces\IUserInterace.cs" />
+    <Compile Remove="Controllers\RootController.cs" />
+    <Compile Remove="Controllers\TestController.cs" />
+    <Compile Remove="Interfaces\UserInterface.cs" />
   </ItemGroup>
 
   <ItemGroup>

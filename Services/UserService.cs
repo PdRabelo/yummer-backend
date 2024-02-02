@@ -1,127 +1,65 @@
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using yummer_backend.Data;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.BearerToken;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
+using yummer_backend.Interfaces;
 using yummer_backend.Models;
 using yummer_backend.Models.DTOs;
 
 namespace yummer_backend.Services;
 
-public class UserService(ApiDbContext context, ILogger<UserService> logger, IMapper mapper)
-    : IUserService
+public class UserService(UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ILogger<UserService> logger)
+    : IUser
 {
-    public async Task<List<User>> GetAllUsersAsync()
+
+    public async Task<IdentityResult> RegisterAsync(UserDto userDto)
     {
         try
         {
-            logger.LogInformation("Retrieving all users...");
-
-            var allUsers = await context.Users.ToListAsync();
-
-            logger.LogInformation($"Total user count: {allUsers.Count}");
-
-            return allUsers;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error retrieving information from database");
-            throw;
-        }
-    }
-
-    public async Task<User?> GetUserAsync(string id)
-    {
-        try
-        {
-            logger.LogInformation("Retrieving user...");
-
-            var user = await context.Users.SingleOrDefaultAsync(u => u.Id == id);
-
-            return user;
-
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error retrieving user with ID {id}", id);
-            return null;
-        }
-
-    }
-
-    public async Task<User?> CreateUserAsync(UserDto newUserDto)
-    {
-        logger.LogInformation("Checking if user exists...");
-        if (await context.Users.AnyAsync(u => u.Email == newUserDto.Email))
-        {
-            logger.LogInformation("User already exists.");
-            return null;
-        }
-        try
-        {
-            logger.LogInformation("Creating user...");
-
-            var newUser = mapper.Map<User>(newUserDto);
-            await context.Users.AddAsync(newUser);
-            await context.SaveChangesAsync();
+            logger.LogInformation("Mapping user...");
+            var user = mapper.Map<User>(userDto);
             
-            logger.LogInformation("User created successfully!");
+            logger.LogInformation("Creating user...");
+            var result = await userManager.CreateAsync(user, user.PasswordHash!);
 
-            return newUser;
-        }
-        catch(Exception ex)
-        {
-            logger.LogError(ex, "Error creating user");
-            throw;
-        }
-    }
-
-    public async Task<User?> DeleteUserAsync(string id)
-    {
-        try
-        {
-            logger.LogInformation("Searching user to delete...");
-            var user = await context.Users.FindAsync(id);
-            if (user == null)
+            if (!result.Succeeded)
             {
-                logger.LogInformation("User does not exist!");
-                return null;
+                logger.LogInformation("Unable to create new user");
+                return result;
             }
-
-            logger.LogInformation("Deleting user...");
-            await context.Users.Where(u => u.Id == id).ExecuteDeleteAsync();
-            await context.SaveChangesAsync();
-            logger.LogInformation("User delete successfully!");
-            return user;
+            
+            logger.LogInformation($"User {user.Email} created successfully!");
+            return result;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error creating user!");
+            logger.LogError("{Message}", ex.Message);
             throw;
         }
     }
 
-    public async Task<User?> UpdateUserAsync(string id, UserDto userData)
+    public async Task<Results<Ok<AccessTokenResponse>, EmptyHttpResult, ProblemHttpResult>> LoginAsync(string email, string password)
     {
         try
         {
-            logger.LogInformation("Searching user to update...");
-            var user = await context.Users.FindAsync(id);
-            if (user == null)
+            signInManager.AuthenticationScheme = IdentityConstants.BearerScheme;
+            logger.LogInformation("Login in...");
+            var result = await signInManager.
+                PasswordSignInAsync(email, password, false, false);
+            if (!result.Succeeded)
             {
-                logger.LogInformation("User does not exist!");
-                return null;
+                logger.LogInformation("Unable to login!");
+                return TypedResults.Empty;
             }
-            logger.LogInformation($"Found user with id {id}");
-            mapper.Map(userData, user);
-            await context.SaveChangesAsync();
-            logger.LogInformation("User update successfully!");
-            return user;
+            logger.LogInformation($"User {email} logged in successfully!");
+            return TypedResults.Empty;
 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error updating user!");
+            logger.LogInformation("{Message}", ex.Message);
             throw;
         }
     }
-
+    
 }

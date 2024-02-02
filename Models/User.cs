@@ -4,8 +4,7 @@ namespace yummer_backend.Models
 {
     public class User : IdentityUser
     {
-        public DateTime BirthDate { get; set; }
-        
-        //public Address
+        public DateTime BirthDate { get; init; }
+
     }
 }

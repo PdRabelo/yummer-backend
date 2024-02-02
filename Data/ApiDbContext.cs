@@ -1,23 +1,17 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using yummer_backend.Data.Configuration;
 using yummer_backend.Models;
 
 namespace yummer_backend.Data
 {
-    public class ApiDbContext : DbContext
+    public class ApiDbContext(DbContextOptions<ApiDbContext> options) : IdentityDbContext<User>(options)
     {
-
-        public DbSet<User> Users { get; set; }
-
-        public ApiDbContext(DbContextOptions<ApiDbContext> options)
-            : base(options)
-        {
-        }
-
+        public DbSet<Item>? Items { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new ItemConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }
