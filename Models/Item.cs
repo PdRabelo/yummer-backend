@@ -14,7 +14,5 @@ namespace yummer_backend.Models
         public string? Description { get; set; }
         
         public double Price { get; set; }
-        
-        public Blob Image { get; set; }
     }
 }

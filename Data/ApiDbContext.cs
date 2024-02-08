@@ -10,8 +10,9 @@ namespace yummer_backend.Data
         public DbSet<Item>? Items { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new ItemConfiguration());
+            modelBuilder.
+                ApplyConfiguration(new UserConfiguration()).
+                ApplyConfiguration(new ItemConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }

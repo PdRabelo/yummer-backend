@@ -10,7 +10,7 @@ namespace yummer_backend.Controllers;
 
 [Route("api/v1/[controller]")]
 [ApiController]
-public class UserController(IUser userService, ILogger<UserController> logger)
+public class UserController(IUserService userServiceService, ILogger<UserController> logger)
     : ControllerBase
 {
 
@@ -19,7 +19,7 @@ public class UserController(IUser userService, ILogger<UserController> logger)
     {
         try
         {
-            var result = await userService.RegisterAsync(userDto);
+            var result = await userServiceService.RegisterAsync(userDto);
             var errors = !result.Succeeded
                 ? result.Errors.Select(identityError => identityError.Description).ToList()
                 : null;
@@ -37,7 +37,7 @@ public class UserController(IUser userService, ILogger<UserController> logger)
     {
         try
         {
-            await userService.LoginAsync(email, password);
+            await userServiceService.LoginAsync(email, password);
         }
         catch (Exception ex)
         {

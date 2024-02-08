@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.BearerToken;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using yummer_backend.Data;
 using yummer_backend.Interfaces;
 using yummer_backend.Models;
 using yummer_backend.Models.DTOs;
@@ -9,7 +10,7 @@ using yummer_backend.Models.DTOs;
 namespace yummer_backend.Services;
 
 public class UserService(UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ILogger<UserService> logger)
-    : IUser
+    : IUserService
 {
 
     public async Task<IdentityResult> RegisterAsync(UserDto userDto)

@@ -14,6 +14,5 @@ namespace yummer_backend.Models.DTOs
         
         public double Price { get; set; }
         
-        public Blob Image { get; set; }
     }
 }

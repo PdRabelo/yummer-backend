@@ -15,5 +15,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.UserName,
                 opt => 
                     opt.MapFrom(src => src.Email));
+
+        CreateMap<ItemDto, Item>();
     }
 }

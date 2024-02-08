@@ -60,7 +60,7 @@ builder.Services.AddIdentityCore<User>()
 
 var app = builder.Build();
 
-app.MapIdentityApi<User>();
+//app.MapIdentityApi<User>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

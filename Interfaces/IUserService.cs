@@ -5,7 +5,7 @@ using yummer_backend.Models.DTOs;
 
 namespace yummer_backend.Interfaces;
 
-public interface IUser
+public interface IUserService
 {
     public Task<IdentityResult> RegisterAsync(UserDto userDto);
     
